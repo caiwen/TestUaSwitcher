@@ -11,7 +11,7 @@
         // 页面加载后显示红字标记
         window.addEventListener('DOMContentLoaded', () => {
             const div = document.createElement('div');
-            div.textContent = `当前UA: ${ua}`;
+            div.textContent = `当前环境: ${ua}`;
             Object.assign(div.style, {
                 position: 'fixed',
                 top: '10px',
