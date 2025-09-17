@@ -22,7 +22,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (ua) {
             chrome.runtime.sendMessage({ type: 'SET_UA', ua }, (response) => {
                 if (response.success) {
-                    alert('测试环境 已更新！刷新页面生效');
+                    const statusMessage = document.getElementById('statusMessage');
+                    statusMessage.textContent = '测试环境 已更新！刷新页面生效';
+                    setTimeout(() => {
+                        statusMessage.textContent = '';
+                    }, 2000);
                 }
             });
         }
