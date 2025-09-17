@@ -1,0 +1,28 @@
+(function() {
+    chrome.storage.local.get('userAgent', (data) => {
+        const ua = data.userAgent || navigator.userAgent;
+
+        // 覆盖 navigator.userAgent
+        Object.defineProperty(navigator, 'userAgent', {
+            value: ua,
+            configurable: false
+        });
+
+        // 页面加载后显示红字标记
+        window.addEventListener('DOMContentLoaded', () => {
+            const div = document.createElement('div');
+            div.textContent = `当前UA: ${ua}`;
+            Object.assign(div.style, {
+                position: 'fixed',
+                top: '10px',
+                right: '10px',
+                color: 'red',
+                background: 'rgba(255,255,255,0.8)',
+                padding: '5px',
+                zIndex: 99999,
+                fontSize: '14px'
+            });
+            document.body.appendChild(div);
+        });
+    });
+})();

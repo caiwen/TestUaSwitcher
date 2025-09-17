@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>UA Switcher</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h3>设置 测试环境</h3>
+<label for="uaSelect">选择测试环境：</label>
+<select id="uaSelect">
+    <option value="">— 请选择 —</option>
+    <option value="test1">test1</option>
+    <option value="test2">test2</option>
+    <option value="test3">test3</option>
+    <option value="test4">test4</option>
+    <option value="test5">test5</option>
+</select>
+
+<label for="uaInput">或输入自定义 UA：</label>
+<input id="uaInput" type="text" placeholder="输入新的 UA">
+
+<button id="saveBtn">保存</button>
+
+<script src="popup.js"></script>
+</body>
+</html>
