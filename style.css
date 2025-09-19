@@ -14,7 +14,7 @@ label {
     font-weight: bold;
 }
 
-select, input {
+#uaSelect, #uaInput {
     width: 100%;
     margin-top: 5px;
     margin-bottom: 10px;
