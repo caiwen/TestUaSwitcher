@@ -37,16 +37,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.success) {
                     const statusMessage = document.getElementById('statusMessage');
                     statusMessage.textContent = '测试环境已更新！刷新页面生效';
-
-                    // 获取当前活动标签页并刷新
-                    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-                        if (tabs.length > 0) {
-                            chrome.tabs.reload(tabs[0].id);
-                        }
-                    });
-
                     setTimeout(() => {
                         statusMessage.textContent = '';
+                        // 获取当前活动标签页并刷新
+                        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                            if (tabs.length > 0) {
+                                chrome.tabs.reload(tabs[0].id);
+                            }
+                        });
                     }, 2000);
                 }
             });
