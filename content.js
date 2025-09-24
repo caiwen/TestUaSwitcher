@@ -1,7 +1,7 @@
 (function() {
     chrome.storage.local.get('userAgent', (data) => {
-        const ua = data.userAgent || navigator.userAgent;
-
+        const ua = data.userAgent;
+        if (!ua) return;
         // 覆盖 navigator.userAgent
         Object.defineProperty(navigator, 'userAgent', {
             value: ua,

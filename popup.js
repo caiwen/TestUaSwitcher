@@ -9,8 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const ua = data.userAgent || navigator.userAgent;
         // 如果之前保存的是 *.mobile，就去掉 .mobile 后显示在输入框
         uaInput.value = ua.replace(/\.mobile$/, '');
+        uaSelect.value = uaInput.value;
         // 如果保存的 UA 以 .mobile 结尾或者保存了 isMobile，则勾选复选框
-        mobileCheckbox.checked = data.isMobile || /\.mobile$/.test(ua);
+        mobileCheckbox.checked =  /\.mobile$/.test(ua);
     });
 
     // 下拉框改变时自动填充输入框
@@ -30,9 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isMobile && !ua.endsWith('.mobile')) {
                 ua += '.mobile';
             }
-
-            chrome.storage.local.set({ isMobile }); // 保存复选框状态
-
             chrome.runtime.sendMessage({ type: 'SET_UA', ua }, (response) => {
                 if (response.success) {
                     const statusMessage = document.getElementById('statusMessage');
