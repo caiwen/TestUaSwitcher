@@ -27,6 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const isMobile = mobileCheckbox.checked;
 
         if (ua) {
+            saveBtn.disabled = true;
+            saveBtn.textContent = '切换中...';
             // 勾选移动端则拼接 .mobile
             if (isMobile && !ua.endsWith('.mobile')) {
                 ua += '.mobile';
@@ -34,15 +36,16 @@ document.addEventListener('DOMContentLoaded', () => {
             chrome.runtime.sendMessage({ type: 'SET_UA', ua }, (response) => {
                 if (response.success) {
                     const statusMessage = document.getElementById('statusMessage');
-                    statusMessage.textContent = '测试环境已更新！刷新页面生效';
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = '保存';
+                    statusMessage.textContent = '测试环境已更新！正在刷新页面...';
+                    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                        if (tabs.length > 0) {
+                            chrome.tabs.reload(tabs[0].id);
+                        }
+                    });
                     setTimeout(() => {
                         statusMessage.textContent = '';
-                        // 获取当前活动标签页并刷新
-                        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-                            if (tabs.length > 0) {
-                                chrome.tabs.reload(tabs[0].id);
-                            }
-                        });
                     }, 2000);
                 }
             });
