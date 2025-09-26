@@ -19,6 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
     uaSelect.addEventListener('change', () => {
         if (uaSelect.value) {
             uaInput.value = uaSelect.value;
+        } else {
+            uaInput.value = '';
         }
     });
 
@@ -55,6 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     resetBtn.addEventListener('click', () => {
         resetBtn.disabled = true;
+        uaInput.value = '';
         resetBtn.textContent = '重置中...';
         chrome.runtime.sendMessage({ type: 'RESET_UA' }, (response) => {
             resetBtn.disabled = false;
