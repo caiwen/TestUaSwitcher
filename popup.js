@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const uaSelect = document.getElementById('uaSelect');
     const uaInput = document.getElementById('uaInput');
     const saveBtn = document.getElementById('saveBtn');
+    const resetBtn = document.getElementById('resetBtn'); // 新增重置按钮引用
     const mobileCheckbox = document.getElementById('mobileCheckbox'); // 新增复选框引用
 
     // 读取当前 UA 和移动端状态
@@ -51,4 +52,26 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
+
+    resetBtn.addEventListener('click', () => {
+        resetBtn.disabled = true;
+        resetBtn.textContent = '重置中...';
+        chrome.runtime.sendMessage({ type: 'RESET_UA' }, (response) => {
+            resetBtn.disabled = false;
+            resetBtn.textContent = '重置';
+            if (response.success) {
+                statusMessage.textContent = '已恢复默认 UA，正在刷新页面...';
+                chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                    if (tabs.length > 0) {
+                        chrome.tabs.reload(tabs[0].id);
+                    }
+                });
+                setTimeout(() => statusMessage.textContent = '', 2000);
+            } else {
+                statusMessage.textContent = '重置失败，请重试';
+            }
+        });
+    });
+
+
 });

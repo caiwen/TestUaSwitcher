@@ -58,6 +58,38 @@ function setUAAtomically(newUA) {
     });
 }
 
+function getAllStoragePromise() {
+    return new Promise((resolve) => {
+        chrome.storage.local.get(null, (items) => resolve(items || {}));
+    });
+}
+
+function updateRulePromise(newUA) {
+    return new Promise((resolve, reject) => {
+        updateRule(newUA, (ok) => {
+            if (ok) resolve();
+            else reject(new Error('updateRule failed'));
+        });
+    });
+}
+
+function setStoragePromise(obj) {
+    return new Promise((resolve, reject) => {
+        chrome.storage.local.set(obj, () => {
+            if (chrome.runtime.lastError) reject(chrome.runtime.lastError);
+            else resolve();
+        });
+    });
+}
+function clearStoragePromise() {
+    return new Promise((resolve, reject) => {
+        chrome.storage.local.clear(() => {
+            if (chrome.runtime.lastError) reject(chrome.runtime.lastError);
+            else resolve();
+        });
+    });
+}
+
 // 监听 popup 消息，更新 UA
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if (msg.type === 'SET_UA') {
@@ -66,4 +98,45 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
             .catch(err => console.error(err.message))
         return true;
     }
+
+    if (msg.type === 'RESET_UA') {
+
+        // 事务化重置：要么清空 storage + 恢复默认 UA，要么回滚不改变任何东西
+        (async () => {
+            const defaultUA = navigator.userAgent;
+            const prevUA = currentUA || navigator.userAgent;
+            const prevStorage = await getAllStoragePromise(); // 备份全部 storage
+
+            try {
+                // 1) 先尝试把请求头恢复到默认 UA（不触及 storage）
+                await updateRulePromise(defaultUA);
+
+                // 2) 然后清空 storage
+                try {
+                    await clearStoragePromise();
+                    // 成功：重置完成
+                    sendResponse({ success: true });
+                } catch (clearErr) {
+                    console.error('清空 storage 失败，尝试回滚:', clearErr);
+                    // 尝试回滚：先恢复 storage 再恢复 UA
+                    try {
+                        await setStoragePromise(prevStorage);
+                        await updateRulePromise(prevUA);
+                        sendResponse({ success: false, message: '清空 storage 失败，已回滚' });
+                    } catch (rollbackErr) {
+                        console.error('回滚也失败:', rollbackErr);
+                        sendResponse({ success: false, message: '重置失败且回滚失败，查看 background 日志' });
+                    }
+                }
+            } catch (updateErr) {
+                console.error('将请求头恢复为默认 UA 失败:', updateErr);
+                // 不改变 storage，直接返回失败
+                sendResponse({ success: false, message: '恢复默认 UA 失败' });
+            }
+        })();
+
+        return true; // 表示会异步调用 sendResponse
+    }
+
+
 });

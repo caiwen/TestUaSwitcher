@@ -3,7 +3,7 @@
   "name": "Homary Test Switcher",
   "version": "1.0",
   "description": "Homary Test Switcher",
-  "permissions": ["storage", "declarativeNetRequest", "declarativeNetRequestWithHostAccess", "activeTab", "scripting"],
+  "permissions": ["storage", "declarativeNetRequest", "declarativeNetRequestWithHostAccess", "activeTab"],
   "host_permissions": ["*://*.testhomary.com/*"],
   "background": {
     "service_worker": "background.js"
